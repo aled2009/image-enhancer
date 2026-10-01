@@ -99,6 +99,12 @@ export default class VideosController {
       await execa('ffmpeg', [
         '-i',
         videoPath,
+        '-map',
+        '0:v:0',
+        '-map',
+        '0:a:0?',
+        '-vf',
+        'scale=1920:1080:force_original_aspect_ratio=decrease',
         '-c:v',
         'libx264',
         '-preset',
