@@ -14,6 +14,8 @@ export default function Home() {
   const [video, setVideo] = useState<File | null>(null);
   const [videoInfo, setVideoInfo] = useState<VideoInfo | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
+  const [processing, setProcessing] = useState(false);
+  const [processedFileName, setProcessedFileName] = useState("");
   const [error, setError] = useState("");
 
   const [outputSettings, setOutputSettings] = useState({
@@ -74,6 +76,45 @@ export default function Home() {
       );
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const processVideo = async () => {
+    if (!video) {
+      return;
+    }
+
+    setProcessing(true);
+    setProcessedFileName("");
+    setError("");
+
+    const formData = new FormData();
+    formData.append("video", video);
+
+    try {
+      const response = await fetch("http://localhost:3333/api/videos/process", {
+        method: "POST",
+        body: formData,
+        headers: {
+          Accept: "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "No se pudo procesar el video");
+      }
+
+      setProcessedFileName(data.video.fileName);
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "Ocurrió un error al procesar el video",
+      );
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -234,7 +275,6 @@ export default function Home() {
                 <h3 className="text-lg font-semibold">
                   Configuración de salida
                 </h3>
-
                 <div className="mt-4 grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-zinc-500">Resolución</p>
@@ -256,13 +296,31 @@ export default function Home() {
                     <p className="mt-1">AAC</p>
                   </div>
                 </div>
+                {!processedFileName && (
+                  <button
+                    type="button"
+                    onClick={processVideo}
+                    disabled={processing}
+                    className="mt-6 w-full rounded-lg bg-white px-6 py-3 font-medium text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {processing ? "Procesando..." : "Mejorar video"}
+                  </button>
+                )}
+                {processedFileName && (
+                  <div className="mt-6 rounded-lg border border-green-900 bg-green-950 p-4 text-center">
+                    <p className="text-sm text-green-300">
+                      Video procesado correctamente
+                    </p>
 
-                <button
-                  type="button"
-                  className="mt-6 w-full rounded-lg bg-white px-6 py-3 font-medium text-black transition hover:bg-zinc-200"
-                >
-                  Mejorar video
-                </button>
+                    <a
+                      href={`http://localhost:3333/api/videos/download/${processedFileName}`}
+                      download={processedFileName}
+                      className="mt-4 inline-block rounded-lg bg-white px-6 py-3 font-medium text-black transition hover:bg-zinc-200"
+                    >
+                      Descargar video
+                    </a>
+                  </div>
+                )}
               </div>
             </>
           )}
