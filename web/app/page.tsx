@@ -2,6 +2,7 @@
 
 import AgentChat from "./components/AgentChat";
 import { useRef, useState } from "react";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
 
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
@@ -27,7 +28,7 @@ export default function Home() {
   const deleteOutput = async (fileName: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3333/api/images/${encodeURIComponent(fileName)}`,
+        `${API_URL}/api/images/${encodeURIComponent(fileName)}`,
         {
           method: "DELETE",
         },
@@ -82,7 +83,7 @@ export default function Home() {
       formData.append("image", file);
       formData.append("scale", "4");
 
-      const result = await fetch("http://localhost:3333/api/images/enhance", {
+      const result = await fetch(`${API_URL}/api/images/enhance`, {
         method: "POST",
         body: formData,
         headers: { Accept: "application/json" },
@@ -207,7 +208,7 @@ export default function Home() {
     formData.append("scale", String(scale));
 
     try {
-      const response = await fetch("http://localhost:3333/api/images/enhance", {
+      const response = await fetch(`${API_URL}/api/images/enhance`, {
         method: "POST",
         body: formData,
         headers: {
@@ -407,7 +408,7 @@ export default function Home() {
               </h3>
 
               <img
-                src={`http://localhost:3333/api/images/download/${encodeURIComponent(processedFileName)}`}
+                src={`${API_URL}/api/images/download/${encodeURIComponent(processedFileName)}`}
                 alt={`Imagen mejorada en ${processedScale}×`}
                 className="mt-4 max-h-150 w-full rounded-lg object-contain"
               />
@@ -419,7 +420,7 @@ export default function Home() {
                   Imagen mejorada correctamente
                 </p>
                 <a
-                  href={`http://localhost:3333/api/images/download/${encodeURIComponent(processedFileName)}`}
+                  href={`${API_URL}/api/images/download/${encodeURIComponent(processedFileName)}`}
                   download={processedFileName}
                   className="mt-4 inline-block cursor-pointer rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition hover:bg-violet-500"
                 >

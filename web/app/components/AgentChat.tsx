@@ -52,7 +52,7 @@ export default function AgentChat({ isOpen, onToggle }: AgentChatProps) {
 
     try {
       const response = await fetch(
-        "http://localhost:3333/api/agent/chat/stream",
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333"}/api/agent/chat/stream`,
         {
           method: "POST",
           headers: {
