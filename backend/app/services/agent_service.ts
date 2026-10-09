@@ -96,7 +96,7 @@ export default class AgentService {
     const ai = this.getAI()
 
     const response = await ai.models.generateContent({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-8-flash',
       contents: message,
       config: {
         systemInstruction: instructions,
@@ -120,7 +120,7 @@ export default class AgentService {
     const ai = this.getAI()
 
     const stream = await ai.models.generateContentStream({
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3-8-flash',
       contents: message,
       config: {
         systemInstruction: instructions,
