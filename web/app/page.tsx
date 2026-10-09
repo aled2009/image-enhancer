@@ -13,6 +13,15 @@ export default function Home() {
   const [error, setError] = useState("");
   const [isAgentOpen, setIsAgentOpen] = useState(false);
   const [showScaleConfirm, setShowScaleConfirm] = useState(false);
+  const [exampleResults, setExampleResults] = useState<Record<string, string>>(
+    {},
+  );
+  const [exampleProcessing, setExampleProcessing] = useState<string | null>(
+    null,
+  );
+  const [exampleErrors, setExampleErrors] = useState<Record<string, string>>(
+    {},
+  );
   const abortController = useRef<AbortController | null>(null);
 
   const deleteOutput = async (fileName: string) => {
@@ -49,6 +58,94 @@ export default function Home() {
     }
 
     event.target.value = "";
+  };
+
+  const processExample = async (src: string, name: string, key: string) => {
+    if (processing || exampleProcessing) {
+      return;
+    }
+
+    setExampleProcessing(key);
+    setExampleErrors((previous) => ({ ...previous, [key]: "" }));
+
+    try {
+      const response = await fetch(src);
+
+      if (!response.ok) {
+        throw new Error("No se pudo cargar la imagen de ejemplo.");
+      }
+
+      const blob = await response.blob();
+      const file = new File([blob], name, { type: blob.type });
+      const formData = new FormData();
+
+      formData.append("image", file);
+      formData.append("scale", "4");
+
+      const result = await fetch("http://localhost:3333/api/images/enhance", {
+        method: "POST",
+        body: formData,
+        headers: { Accept: "application/json" },
+      });
+
+      const data = await result.json();
+
+      if (!result.ok) {
+        throw new Error(data.message || "No se pudo mejorar la imagen.");
+      }
+
+      const previousFileName = exampleResults[key];
+      const newFileName = data.image.fileName;
+
+      setExampleResults((previous) => ({
+        ...previous,
+        [key]: newFileName,
+      }));
+
+      if (previousFileName && previousFileName !== newFileName) {
+        await deleteOutput(previousFileName);
+      }
+    } catch (error) {
+      setExampleErrors((previous) => ({
+        ...previous,
+        [key]:
+          error instanceof Error
+            ? error.message
+            : "Ocurrió un error al procesar el ejemplo.",
+      }));
+    } finally {
+      setExampleProcessing(null);
+    }
+  };
+
+  const handleExampleChange = async (src: string, name: string) => {
+    if (processing || exampleProcessing) {
+      return;
+    }
+
+    try {
+      const response = await fetch(src);
+
+      if (!response.ok) {
+        throw new Error("No se pudo cargar la imagen de ejemplo.");
+      }
+
+      const blob = await response.blob();
+      const file = new File([blob], name, { type: blob.type });
+
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
+      setImage(file);
+      setPreviewUrl(URL.createObjectURL(file));
+      setProcessedFileName("");
+      setProcessedScale(null);
+      setError("");
+      setShowScaleConfirm(false);
+    } catch {
+      setError("No se pudo cargar la imagen de ejemplo.");
+    }
   };
 
   const removeImage = async () => {
@@ -331,6 +428,87 @@ export default function Home() {
               </div>
             </div>
           )}
+        </section>
+
+        <section className="mt-10 w-full space-y-6">
+          <div>
+            <h2 className="text-2xl font-bold">Prueba los ejemplos</h2>
+            <p className="mt-2 text-sm text-zinc-400">
+              Compara cada imagen original con su versión mejorada mediante IA
+              en 4×.
+            </p>
+          </div>
+
+          {[
+            {
+              key: "example1",
+              name: "Ejemplo 1",
+              src: "/examples/example-1.png",
+              enhancedSrc: "/examples/example-1-enhanced.png",
+              fileName: "example-1.png",
+            },
+            {
+              key: "example2",
+              name: "Ejemplo 2",
+              src: "/examples/example-2.jpg",
+              enhancedSrc: "/examples/example-2-enhanced.jpg",
+              fileName: "example-2.jpg",
+            },
+          ].map((example) => (
+            <article
+              key={example.key}
+              className="rounded-2xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6"
+            >
+              <h3 className="mb-4 text-lg font-semibold">{example.name}</h3>
+
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="min-w-0">
+                  <p className="mb-2 text-sm text-zinc-400">Imagen original</p>
+
+                  <div className="flex min-h-48 items-center justify-center rounded-xl bg-zinc-950 p-2">
+                    <img
+                      src={example.src}
+                      alt={`${example.name}, original`}
+                      className="max-h-80 max-w-full object-contain"
+                    />
+                  </div>
+                </div>
+
+                <div className="min-w-0">
+                  <p className="mb-2 text-sm text-zinc-400">
+                    Resultado mejorado con IA · 4×
+                  </p>
+
+                  <div className="flex min-h-48 items-center justify-center rounded-xl bg-zinc-950 p-2">
+                    <img
+                      src={example.enhancedSrc}
+                      alt={`${example.name}, mejorado con IA en 4×`}
+                      className="max-h-80 max-w-full object-contain"
+                      onError={(event) => {
+                        event.currentTarget.style.display = "none";
+                      }}
+                      onLoad={(event) => {
+                        event.currentTarget.style.display = "block";
+                      }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-4 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleExampleChange(example.src, example.fileName)
+                  }
+                  disabled={processing || exampleProcessing !== null}
+                  className="w-full cursor-pointer rounded-lg bg-violet-600 px-5 py-3 font-medium text-white transition hover:bg-violet-500 disabled:cursor-not-allowed disabled:opacity-50 sm:w-auto"
+                >
+                  Probar esta imagen
+                </button>
+              </div>
+            </article>
+          ))}
         </section>
       </div>
 
