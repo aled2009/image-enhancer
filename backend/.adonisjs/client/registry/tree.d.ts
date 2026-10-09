@@ -2,9 +2,14 @@
 import type { routes } from './index.ts'
 
 export interface ApiDefinition {
-  videos: {
-    analyze: typeof routes['videos.analyze']
-    process: typeof routes['videos.process']
+  images: {
+    enhance: typeof routes['images.enhance']
+    download: typeof routes['images.download']
+    deleteOutput: typeof routes['images.delete_output']
+  }
+  agent: {
+    chat: typeof routes['agent.chat']
+    chatStream: typeof routes['agent.chat_stream']
   }
   home: typeof routes['home']
   newAccount: {

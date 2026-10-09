@@ -6,17 +6,35 @@ import type { ApiDefinition } from './tree.d.ts'
 const placeholder: any = {}
 
 const routes = {
-  'videos.analyze': {
+  'images.enhance': {
     methods: ["POST"],
-    pattern: '/api/videos/analyze',
-    tokens: [{"old":"/api/videos/analyze","type":0,"val":"api","end":""},{"old":"/api/videos/analyze","type":0,"val":"videos","end":""},{"old":"/api/videos/analyze","type":0,"val":"analyze","end":""}],
-    types: placeholder as Registry['videos.analyze']['types'],
+    pattern: '/api/images/enhance',
+    tokens: [{"old":"/api/images/enhance","type":0,"val":"api","end":""},{"old":"/api/images/enhance","type":0,"val":"images","end":""},{"old":"/api/images/enhance","type":0,"val":"enhance","end":""}],
+    types: placeholder as Registry['images.enhance']['types'],
   },
-  'videos.process': {
+  'images.download': {
+    methods: ["GET","HEAD"],
+    pattern: '/api/images/download/:fileName',
+    tokens: [{"old":"/api/images/download/:fileName","type":0,"val":"api","end":""},{"old":"/api/images/download/:fileName","type":0,"val":"images","end":""},{"old":"/api/images/download/:fileName","type":0,"val":"download","end":""},{"old":"/api/images/download/:fileName","type":1,"val":"fileName","end":""}],
+    types: placeholder as Registry['images.download']['types'],
+  },
+  'images.delete_output': {
+    methods: ["DELETE"],
+    pattern: '/api/images/:fileName',
+    tokens: [{"old":"/api/images/:fileName","type":0,"val":"api","end":""},{"old":"/api/images/:fileName","type":0,"val":"images","end":""},{"old":"/api/images/:fileName","type":1,"val":"fileName","end":""}],
+    types: placeholder as Registry['images.delete_output']['types'],
+  },
+  'agent.chat': {
     methods: ["POST"],
-    pattern: '/api/videos/process',
-    tokens: [{"old":"/api/videos/process","type":0,"val":"api","end":""},{"old":"/api/videos/process","type":0,"val":"videos","end":""},{"old":"/api/videos/process","type":0,"val":"process","end":""}],
-    types: placeholder as Registry['videos.process']['types'],
+    pattern: '/api/agent/chat',
+    tokens: [{"old":"/api/agent/chat","type":0,"val":"api","end":""},{"old":"/api/agent/chat","type":0,"val":"agent","end":""},{"old":"/api/agent/chat","type":0,"val":"chat","end":""}],
+    types: placeholder as Registry['agent.chat']['types'],
+  },
+  'agent.chat_stream': {
+    methods: ["POST"],
+    pattern: '/api/agent/chat/stream',
+    tokens: [{"old":"/api/agent/chat/stream","type":0,"val":"api","end":""},{"old":"/api/agent/chat/stream","type":0,"val":"agent","end":""},{"old":"/api/agent/chat/stream","type":0,"val":"chat","end":""},{"old":"/api/agent/chat/stream","type":0,"val":"stream","end":""}],
+    types: placeholder as Registry['agent.chat_stream']['types'],
   },
   'home': {
     methods: ["GET","HEAD"],
