@@ -1,3 +1,4 @@
+import { Readable } from 'stream'
 import type { HttpContext } from '@adonisjs/core/http'
 import AgentService from '#services/agent_service'
 
@@ -58,25 +59,22 @@ export default class AgentController {
     response.header('Cache-Control', 'no-cache, no-transform')
     response.header('X-Accel-Buffering', 'no')
 
-    try {
-      const agentService = new AgentService()
+    const agentService = new AgentService()
+    const generator = agentService.replyStream(message.trim())
 
-      for await (const chunk of agentService.replyStream(message.trim())) {
-        response.response.write(chunk)
-      }
+    const stream = Readable.from(
+      (async function* () {
+        try {
+          for await (const chunk of generator) {
+            yield chunk
+          }
+        } catch (error) {
+          console.error('Error en el streaming del agente:', error)
+          yield '\n\n[El agente no pudo completar la respuesta. Inténtalo nuevamente.]'
+        }
+      })()
+    )
 
-      return response.response.end()
-    } catch (error) {
-      console.error('Error en el streaming del agente:', error)
-
-      if (!response.response.headersSent) {
-        return response.internalServerError({
-          status: 'error',
-          message: 'El agente no pudo responder. Inténtalo nuevamente.',
-        })
-      }
-
-      response.response.end()
-    }
+    return response.stream(stream)
   }
 }
