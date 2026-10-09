@@ -7,9 +7,9 @@ import type { InferInput, SimpleError } from '@vinejs/vine/types'
 export type ParamValue = string | number | bigint | boolean
 
 export interface Registry {
-  'videos.analyze': {
+  'images.enhance': {
     methods: ["POST"]
-    pattern: '/api/videos/analyze'
+    pattern: '/api/images/enhance'
     types: {
       body: {}
       paramsTuple: []
@@ -19,9 +19,45 @@ export interface Registry {
       errorResponse: unknown
     }
   }
-  'videos.process': {
+  'images.download': {
+    methods: ["GET","HEAD"]
+    pattern: '/api/images/download/:fileName'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { fileName: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'images.delete_output': {
+    methods: ["DELETE"]
+    pattern: '/api/images/:fileName'
+    types: {
+      body: {}
+      paramsTuple: [ParamValue]
+      params: { fileName: ParamValue }
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'agent.chat': {
     methods: ["POST"]
-    pattern: '/api/videos/process'
+    pattern: '/api/agent/chat'
+    types: {
+      body: {}
+      paramsTuple: []
+      params: {}
+      query: {}
+      response: unknown
+      errorResponse: unknown
+    }
+  }
+  'agent.chat_stream': {
+    methods: ["POST"]
+    pattern: '/api/agent/chat/stream'
     types: {
       body: {}
       paramsTuple: []

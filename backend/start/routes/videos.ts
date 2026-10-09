@@ -3,3 +3,4 @@ import VideosController from '#controllers/videos_controller'
 
 router.post('/api/videos/analyze', [VideosController, 'analyze'])
 router.post('/api/videos/process', [VideosController, 'process'])
+router.get('/api/videos/download/:fileName', [VideosController, 'download'])

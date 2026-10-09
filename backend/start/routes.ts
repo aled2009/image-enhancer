@@ -37,4 +37,6 @@ router.get('/api/health', async () => {
   }
 })
 
-import './routes/videos.ts'
+import './routes/images.ts'
+
+import './routes/agent.ts'

@@ -133,4 +133,9 @@ export default class VideosController {
       await unlink(videoPath)
     }
   }
+  async download({ params, response }: HttpContext) {
+    const filePath = join(process.cwd(), 'tmp', 'outputs', params.fileName)
+
+    return response.attachment(filePath, params.fileName)
+  }
 }
