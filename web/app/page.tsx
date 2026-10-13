@@ -4,6 +4,10 @@ import AgentChat from "./components/AgentChat";
 import { useRef, useState } from "react";
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3333";
 
+// Cuando tengas tu repositorio en GitHub, pega aquí el enlace.
+// Ejemplo: "https://github.com/tu-usuario/tu-repositorio"
+const GITHUB_URL = "https://github.com/aled2009/image-enhancer.git";
+
 export default function Home() {
   const [image, setImage] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -260,11 +264,50 @@ export default function Home() {
 
   return (
     <main
-      className={`min-h-screen bg-[radial-gradient(ellipse_at_top,rgba(109,40,217,0.22),transparent_55%),linear-gradient(to_bottom,#09090b,#12091f,#09090b)] text-white transition-[padding] duration-300 ${
+      className={`relative min-h-screen bg-[radial-gradient(ellipse_at_top,rgba(109,40,217,0.22),transparent_55%),linear-gradient(to_bottom,#09090b,#12091f,#09090b)] text-white transition-[padding] duration-300 ${
         isAgentOpen ? "lg:pr-105" : ""
       }`}
     >
-      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center px-4 py-10 transition-all duration-300 sm:px-6 sm:py-16">
+      <aside className="absolute left-4 top-4 z-10 max-w-64 rounded-xl border border-zinc-800 bg-zinc-900/80 px-4 py-3 text-left shadow-lg shadow-violet-950/20 backdrop-blur sm:left-6 sm:top-6">
+        <p className="text-sm font-semibold leading-tight text-white">
+          David Alejandro Delgado Zambrano
+        </p>
+
+        <p className="mt-1 text-xs text-violet-300">Ingeniería de Software</p>
+
+        <p className="mt-1 text-xs text-zinc-400">Facultad de Ingeniería</p>
+
+        <p className="mt-1 text-xs text-zinc-400">
+          Universidad Cooperativa de Colombia - Campus Pasto
+        </p>
+
+        <p className="mt-1 text-xs text-zinc-500">
+          Contexto de la Ingeniería de Software
+        </p>
+
+        <p className="mt-1 text-xs text-zinc-500">
+          Semestre 1 · Grupo 1A · 2026-B
+        </p>
+
+        <p className="mt-2 text-xs">
+          {GITHUB_URL ? (
+            <a
+              href={GITHUB_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-medium text-violet-300 underline-offset-2 transition hover:text-violet-200 hover:underline"
+            >
+              GitHub: ver repositorio ↗
+            </a>
+          ) : (
+            <span className="text-zinc-500">
+              Enlace de GitHub: próximamente
+            </span>
+          )}
+        </p>
+      </aside>
+
+      <div className="mx-auto flex min-h-screen w-full max-w-5xl flex-col items-center px-4 pb-10 pt-52 transition-all duration-300 sm:px-6 sm:pb-16 lg:pt-16">
         <div className="mb-12 text-center">
           <h1 className="text-4xl font-bold tracking-tight">Image Enhancer</h1>
 
