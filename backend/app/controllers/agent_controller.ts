@@ -1,6 +1,6 @@
 import { Readable } from 'stream'
 import type { HttpContext } from '@adonisjs/core/http'
-import AgentService from '#services/agent_service'
+import AgentService, { agentErrorMessage } from '#services/agent_service'
 
 export default class AgentController {
   async chat({ request, response }: HttpContext) {
@@ -33,7 +33,7 @@ export default class AgentController {
 
       return response.internalServerError({
         status: 'error',
-        message: 'El agente no pudo responder. Inténtalo nuevamente.',
+        message: agentErrorMessage(error),
       })
     }
   }
@@ -70,7 +70,7 @@ export default class AgentController {
           }
         } catch (error) {
           console.error('Error en el streaming del agente:', error)
-          yield '\n\n[El agente no pudo completar la respuesta. Inténtalo nuevamente.]'
+          yield `\n\n[${agentErrorMessage(error)}]`
         }
       })()
     )
